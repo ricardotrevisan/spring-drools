@@ -1,0 +1,32 @@
+import br.dev.quant.businessrules.api.Order;
+import br.dev.quant.businessrules.api.Message;
+
+// Não diferenciamos condições mediante meio de pagamento - apenas para fins ilustrativos
+rule "VISA"
+when
+orderObject : Order(cardType=="VISA" && price>=100);
+then
+    orderObject.setDiscount(50);
+    
+    Message message = new Message();
+    message.setMessage("cash");
+    insert(message);
+
+    Message comment = new Message();
+    comment.setMessage("no available installments");
+    insert(comment);
+end;
+
+rule "MASTER"
+when
+    orderObject : Order(cardType=="MASTER" && price>=150);
+then
+    orderObject.setDiscount(8);
+end;
+
+rule "AMEX"
+when
+    orderObject : Order(cardType=="AMEX" && price>=150);
+then
+    orderObject.setDiscount(15);
+end;
